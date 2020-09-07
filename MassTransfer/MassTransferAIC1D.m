@@ -9,7 +9,7 @@ V = 0;
 xCenter = 0;
 dblXShift = V*T + xCenter;
 intNumOfEns = 1; %number of ensemble if needed, no longer need
-Domain = [-5 5];
+Domain = [-6 6];
 ZeroDomain = Domain;
 Domain = Domain + dblXShift;
 dblBinSize = 0.1;%no longer need
@@ -23,12 +23,13 @@ vecdx = 10./(vecNumData - 1);
 matExactSolution = zeros(length(vecNumData),vecNumData(end));
 matX = zeros(length(vecNumData),vecNumData(end));
 for i = 1:length(vecNumData)
-    matX(i,1:vecNumData(i)) = Domain(1,1):vecdx(i):Domain(1,2);
+    matX(i,1:vecNumData(i)) = -5:vecdx(i):5;
+    %matX(i,1:vecNumData(i)) = sort(10*rand(1,vecNumData(i)) - 5);
     matExactSolution(i,1:vecNumData(i)) = ExactSolution1D(matX(i,1:vecNumData(i)),T,D,V,xCenter);
 end
 
 %Set up the number of particles
-vecNumOfParts = [30 50 100 300 500 1000 3000 5000 8000];
+vecNumOfParts = [30 100 300 500 1000 3000 5000 8000 18000];
 intIter = length(vecNumOfParts);
 
 matAICResults = zeros(intIter,3);
@@ -45,7 +46,7 @@ for k = 1:length(vecNumData)
             matAICResults(i,1) = vecNumOfParts(i);
             dblError = 1/vecNumData(k)*norm(matExactSolution(k,1:vecNumData(k))'-...
                 MassTransferImp1DSolution(matX(k,1:vecNumData(k)),DValue,Domain,ZeroDomain,vecNumOfParts(i),T,intNumOfEns,dblBinSize,V,xCenter),2)^2;
-            matAICResults(i,2) = (matAICResults(i,2)*(j-1) + 2*log(dblError))/j;
+            matAICResults(i,2) = (matAICResults(i,2)*(j-1) + 2*log(dblError) + 12/(vecNumData(k)- 3))/j;
             matAICResults(i,3) = (matAICResults(i,3)*(j-1) + matAICResults(i,2) + log(vecNumOfParts(i)))/j;
             
         end

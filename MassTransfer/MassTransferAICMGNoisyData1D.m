@@ -11,9 +11,9 @@ V = 0;
 xCenter = 0;
 dblXShift = V*T + xCenter;
 intNumData = 30;%number of data points
-intNumOfPart = 300; %number of particles
+intNumOfPart = 3000; %number of particles
 intNumOfEns = 1; %number of ensemble for random walk
-Domain = [-5 5];
+Domain = [-6 6];
 ZeroDomain = Domain;
 Domain = Domain + dblXShift;
 %dx = (Domain(1,2) - Domain(1,1))/intNumData;
@@ -23,8 +23,9 @@ dblBinSize = 0.1;
 dblAlpha = 1;
 %Choose x points
 %x = (Domain(1,2) - Domain(1,1))*rand(1,intNumData) + Domain(1,1);
-x = Domain(1,1):dx:Domain(1,2);
-%x = -3:6/17:3;
+%x = 10*rand(1,intNumData) - 5;
+%x = Domain(1,1):dx:Domain(1,2);
+x = -5:dx:5;
 x = sort(x);
 intNumData = length(x);
 vecErrorNoise = [3 9 81];
@@ -60,7 +61,7 @@ for k=1:length(vecErrorNoise)
     
     %---------------------------------------------------------------------
     %Using this approx D value to compute the AIC and AIC + ln(N)
-    vecNumOfParts = [20 30 100 300 500 1000 3000 8000]';
+    vecNumOfParts = [20 30 100 300 500 1000 3000 8000 18000]';
     intIter = length(vecNumOfParts);
     matAICResults = zeros(intIter,3);
     

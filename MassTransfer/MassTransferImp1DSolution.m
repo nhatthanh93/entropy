@@ -70,27 +70,31 @@ for j=1:intNumOfEns
     
     %Start the mass/concentration transfer
     intNumOfTimeSteps = 100;
-    dt = T/intNumOfTimeSteps;
+    dt = T/(intNumOfTimeSteps);
     if ((vecDomain(1,2) - vecDomain(1,1))/intNumOfPart) > sqrt(2*D*dt)
         disp('Warning: Bad particles spacing.')
     end
     % Figure out the nearby particles
     dblProb = 8*D*dt;
-    dblSearchDist = 3*sqrt(dblProb/2);
+    dblSearchDist = 3*sqrt(dblProb);
+    %dblSearchDist = 20;
     %Search for nearby paticles with certain radius. We are just the BucketSize
     %option for this search, which is a Kd-tree search with maximum of 10 data
     %points in the leaf node. There are others search methods.
     [celIdx, celRadius] = rangesearch(matMTSolution(:,1), matMTSolution(:,1), dblSearchDist,'BucketSize',max(10,round(intNumOfPart*1e-2)));
+    %[celIdx, celRadius] = rangesearch(matMTSolution(:,1), matMTSolution(:,1), dblSearchDist,'BucketSize',100);
     matT = MassTransferProbMat1D(matMTSolution,D,dt,celIdx,celRadius);
     for k = 1:intNumOfTimeSteps
         %matMTSolution = MassTransferImp1D(matMTSolution,D,dt,celIdx,celRadius);
         %matMTSolution = MassTransferMatrix1D(matMTSolution,D,dt,celIdx,celRadius);
         matMTSolution = MassTransferMatrix1D(matMTSolution,matT);
     end
-    
+%     vecApproxSolution = matMTSolution(:,2);
+%     break;
     %Compute the approximation
     if strBinningType == 'C'
-        vecApproxSolution = MassTransferBinning1D(vecX,matMTSolution);
+        vecApproxTemp = MassTransferBinning1D(vecX,matMTSolution);
+        vecApproxSolution = (vecApproxSolution.*(j-1) + vecApproxTemp)./j;
     elseif strBinningType == 'M'
         %     %Left bin [ )
         intXIdx = 1;

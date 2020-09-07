@@ -12,15 +12,17 @@ dblXShift = V*T + xCenter;
 intNumData = 30;%number of data points
 intNumOfPart = 300; %number of particles
 intNumOfEns = 1; %number of ensemble for random walk
-Domain = [-5 5];
+Domain = [-6 6];
 ZeroDomain = Domain;
 Domain = Domain + dblXShift;
-dx = (Domain(1,2) - Domain(1,1))/intNumData; 
-
+%dx = (Domain(1,2) - Domain(1,1))/intNumData; 
+dx = 10/(intNumData-1);
 dblBinSize = 0.1;
 %Choose x points
-x = (Domain(1,2) - Domain(1,1))*rand(1,intNumData) + Domain(1,1);
+%x = (Domain(1,2) - Domain(1,1))*rand(1,intNumData) + Domain(1,1);
+x = 10*rand(1,intNumData) - 5;
 %x = Domain(1,1):dx:Domain(1,2);
+%x = -5:dx:5;
 
 x = sort(x);
 intNumData = length(x);
@@ -28,8 +30,8 @@ intNumData = length(x);
 vecExactSolution = ExactSolution1D(x,T,D,V,xCenter);
 
 %Find D that minimize the error
-funErrorD =@(d) 1/intNumData*norm(vecExactSolution'-...
-    MassTransferImp1DSolution(x,d,Domain,ZeroDomain,intNumOfPart,T,intNumOfEns,dx,V,xCenter),2)^2;
+funErrorD =@(d) 1/intNumData*sum(1./(1.*vecExactSolution').*(vecExactSolution'-...
+    MassTransferImp1DSolution(x,d,Domain,ZeroDomain,intNumOfPart,T,intNumOfEns,dblBinSize,V,xCenter)).^2);
 DValue = 0.5;%inital guess
 %--------------------------------------------------------------------------
 %This use to control the value of D, comment one for the other to test
@@ -37,7 +39,7 @@ DValue = 0.5;%inital guess
 DValue = 1;
 %-------------------------------------------------------------------------
 %Using this approx D value to compute the AIC and AIC + ln(N)
-vecNumOfParts = [30 100 300 500 1000 3000 5000 8000]';
+vecNumOfParts = [30 100 300 500 1000 3000 5000 8000 18000]';
 intIter = length(vecNumOfParts);
 matAICResults = zeros(intIter,3);
 

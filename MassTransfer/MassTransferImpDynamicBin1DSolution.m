@@ -43,7 +43,7 @@ for j=1:intNumOfEns
     end
     % Figure out the nearby particles
     dblProb = 8*D*dt;
-    dblSearchDist = 3*sqrt(dblProb/2);
+    dblSearchDist = 3*sqrt(dblProb);
     %dblSearchDist = 1;
     %Search for nearby paticles with certain radius. We are just the BucketSize
     %option for this search, which is a Kd-tree search with maximum of 10 data
@@ -61,28 +61,29 @@ for j=1:intNumOfEns
     
     %Create a support volume bin
     vecTempApproxSolution = zeros(intSizeX,1);
-    vecSupportBin = zeros(intNumOfPart+1,1);
-    vecSupportBin(1,1) = matMTSolution(1,1);
-    vecSupportBin(end,1) = matMTSolution(end,1);
-    for q = 1:intNumOfPart-1
-        vecSupportBin(q+1,1) = (matMTSolution(q+1,1) + matMTSolution(q,1))/2;
-    end
-    intXIdx = 1;
-    intBinIdx = 1;
-    while intXIdx <= length(vecX)
-        blnBinFound = 0;
-        while ~blnBinFound
-            if vecX(intXIdx) >= vecSupportBin(intBinIdx) && vecX(intXIdx) <= vecSupportBin(intBinIdx+1)
-                vecTempApproxSolution(intXIdx) = matMTSolution(intBinIdx,2);
-                blnBinFound = 1;
-                intXIdx = intXIdx + 1;
-            else
-                intBinIdx = intBinIdx + 1;
-            end
-        end
-        
-        
-    end
+    vecTempApproxSolution = MassTransferBinning1D(vecX,matMTSolution);
+%     vecSupportBin = zeros(intNumOfPart+1,1);
+%     vecSupportBin(1,1) = matMTSolution(1,1);
+%     vecSupportBin(end,1) = matMTSolution(end,1);
+%     for q = 1:intNumOfPart-1
+%         vecSupportBin(q+1,1) = (matMTSolution(q+1,1) + matMTSolution(q,1))/2;
+%     end
+%     intXIdx = 1;
+%     intBinIdx = 1;
+%     while intXIdx <= length(vecX)
+%         blnBinFound = 0;
+%         while ~blnBinFound
+%             if vecX(intXIdx) >= vecSupportBin(intBinIdx) && vecX(intXIdx) <= vecSupportBin(intBinIdx+1)
+%                 vecTempApproxSolution(intXIdx) = matMTSolution(intBinIdx,2);
+%                 blnBinFound = 1;
+%                 intXIdx = intXIdx + 1;
+%             else
+%                 intBinIdx = intBinIdx + 1;
+%             end
+%         end
+%         
+%         
+%     end
     vecApproxSolution = (vecApproxSolution.*(j-1) + vecTempApproxSolution)./j;
 end
 end
